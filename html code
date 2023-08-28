@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mathematica V.1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #333333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .math-ai-container {
+            background-color: #444444;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            color: #ffffff;
+            animation: fadeInFromBottom 1s ease-in-out;
+        }
+        @keyframes fadeInFromBottom {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 24px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 24px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .symbol-explanation {
+            font-size: 18px;
+            margin-top: 20px;
+            color: #ccc;
+            text-align: left;
+            margin-left: 20px;
+        }
+        #result {
+            font-size: 28px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="math-ai-container">
+        <h1>Mathematica V.1</h1>
+        <p class="symbol-explanation">+ : Addition</p>
+        <p class="symbol-explanation">- : Subtraction</p>
+        <p class="symbol-explanation">* : Multiplication</p>
+        <p class="symbol-explanation">/ : Division</p>
+        <p class="symbol-explanation">^ : Exponentiation</p>
+        <p class="symbol-explanation">( : Open Parenthesis</p>
+        <p class="symbol-explanation">) : Close Parenthesis</p>
+        <p class="symbol-explanation">\ : Fraction (e.g., 1\2 for 1/2)</p>
+        <p class="symbol-explanation">√ : Square Root</p>
+        <p class="symbol-explanation">Variables: Use letters (e.g., a, b)</p>
+        <p class="symbol-explanation">Equations: Use = (e.g., a + b = 15)</p>
+        <p class="symbol-explanation">Enter a mathematical expression:</p>
+        <input type="text" id="inputExpression" onkeyup="handleKeyup(event)">
+        <button onclick="calculate()">Calculate</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function handleKeyup(event) {
+            if (event.key === "Enter") {
+                calculate();
+            }
+        }
+
+        function calculate() {
+            const inputExpression = document.getElementById("inputExpression").value;
+            const resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = "";
+
+            try {
+                const result = evaluateExpression(inputExpression);
+                resultDiv.innerHTML = `Result: ${result}`;
+            } catch (error) {
+                resultDiv.innerHTML = "Error: Invalid expression";
+            }
+        }
+
+        function evaluateExpression(expression) {
+            // Replace variables with their values
+            const variables = {
+                a: 5, // Example: a = 5
+                b: 10 // Example: b = 10
+            };
+
+            for (const variable in variables) {
+                expression = expression.replace(new RegExp(variable, "g"), variables[variable]);
+            }
+
+            // Handle fractions
+            if (expression.includes("\\")) {
+                const parts = expression.split("\\");
+                if (parts.length === 2) {
+                    const numerator = parseFloat(parts[0]);
+                    const denominator = parseFloat(parts[1]);
+                    if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
+                        return numerator / denominator;
+                    }
+                }
+            }
+
+            // Solve equations with multiple variables
+            if (expression.includes("=")) {
+                const sides = expression.split("=");
+                if (sides.length === 2) {
+                    const leftSide = evaluateExpression(sides[0]);
+                    const rightSide = evaluateExpression(sides[1]);
+                    if (!isNaN(leftSide) && !isNaN(rightSide)) {
+                        return leftSide === rightSide ? "True" : "False";
+                    }
+                }
+            }
+
+            // Evaluate the expression using eval
+            return eval(expression);
+        }
+    </script>
+</body>
+</html>
